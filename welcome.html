@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Приветствие</title>
+  </head>
+  <body>
+    <h1 id="greeting">Проверяем вход...</h1>
+    <button id="signout-button" type="button">Выйти</button>
+
+    <script type="module">
+      import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
+
+      const supabase = createClient(
+        'https://gkvlrqsamgdkzaxgrgax.supabase.co',
+        'sb_publishable_GPnjmVLdy-rQ-I6TJxHu2w_ATkXCpNO'
+      )
+
+      const greeting = document.querySelector('#greeting')
+
+      const { data, error } = await supabase.auth.getSession()
+      const session = data?.session
+
+      if (error || !session) {
+        window.location.replace('index.html')
+      } else {
+        const name = session.user.user_metadata?.name
+        greeting.textContent = `Привет, ${name || session.user.email}!`
+      }
+
+      document.querySelector('#signout-button').addEventListener('click', async () => {
+        await supabase.auth.signOut()
+        window.location.replace('index.html')
+      })
+    </script>
+  </body>
+</html>
